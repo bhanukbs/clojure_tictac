@@ -38,5 +38,33 @@
 )
 ;;(matchThreePositions mWinState  2 4 6 "M")  return true
 ;;(matchThreePositions mWinState  2 4 6 "H")  return false
+
+(defn checkValidUsertype [slot]
+       (or (= slot "H") (= slot "M") )
+)
+
+(defn checkSingleSlot [idx itm] 
+     (if (checkValidUsertype itm)
+         true
+         (= (str idx) itm)
+     )
+)
+;; check if curstate has only valid characters like "H","M", or "1","2"...
+(defn checkCurStateCharValid 
+  "check if curstate has only valid characters like 'H'or'M', or '1'or'2'..."
+  [curstate]
+      (not    (some false? 
+                (map-indexed checkSingleSlot curstate)
+              )
+      )        
+)
+
+(def invalidState ["0" "1" "2" "H" "M" "2" "M" "7" "l"])
+;;(checkCurStateCharValid invalidState) return false
+;;(checkCurStateCharValid onestepWinState) return true
+
+
+
+           
                 
   
