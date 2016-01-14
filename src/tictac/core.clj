@@ -1,61 +1,70 @@
 (ns tictac.core)
 
+;; initial game state
+(def initialState ["0" "1" "2"
+                   "3" "4" "5"
+                   "6" "7" "8"])
 
- ;;  basic data structure for prog
-(def initState [ "a1" "a2" "a3"
-                 "b1" "b2" "b3"
-                 "c1" "c2" "c3"])
 
-;; win states
-(def winState [  ;horizontal case
-                 ["a1" "a2" "a3"] 
-                 ["b1" "b2" "b3"]
-                 ["c1" "c2" "c3"]
-                 ;vertical case
-                 ["a1" "b1" "c1"]
-                 ["a2" "b2" "c2"]
-                 ["a3" "b3" "c3"]
-                 ;X case
-                 ["a1" "b2" "c3"]
-                 ["a3" "b2" "c1"]
-            ]
-  )
+;; an example of game not over state
+(def notOverState ["M" "H" "M"
+                   "H" "H" "5"
+                   "M" "M" "H"])
 
-;;(map #(str % "M") ["a1" "a2" "a3"] ) --> ("a1M" "a2M" "a3M")
-(defn attachUsertype [usertype statevector ] 
-          (vec 
-            (map #(str % usertype) statevector )
-               )
+;; an example of machine Win State
+(def mWinState ["0" "1" "M"
+                "3" "M" "5"
+                "M" "7" "8"])
+
+;; an example of one step to a machine Win State
+(def onestepWinState ["0" "1" "2"
+                      "H" "M" "H"
+                      "M" "7" "H"])
+
+
+(defn matchThreePositions
+    "takes currentState vector, 
+           position integers p1,p2 and p3
+    and usertype character (H or M)   , return true if same usertype is found in
+    p1,p2 and p3"
+    
+    [curState p1 p2 p3 usertype]
+    
+    (= usertype
+       (nth curState p1)
+       (nth curState p2)
+       (nth curState p3)
+    )
+)
+;;(matchThreePositions mWinState  2 4 6 "M")  return true
+;;(matchThreePositions mWinState  2 4 6 "H")  return false
+
+(defn checkValidUsertype [slot]
+       (or (= slot "H") (= slot "M") )
 )
 
-(defn userTypeWinStatesGenerator [usertype] 
-  (vec
-    (map (partial attachUsertype usertype) winState)
-  )
+(defn checkSingleSlot [idx itm] 
+     (if (checkValidUsertype itm)
+         true
+         (= (str idx) itm)
+     )
+)
+;; check if curstate has only valid characters like "H","M", or "1","2"...
+(defn checkCurStateCharValid 
+  "check if curstate has only valid characters like 'H'or'M', or '1'or'2'..."
+  [curstate]
+      (not    (some false? 
+                (map-indexed checkSingleSlot curstate)
+              )
+      )        
 )
 
-(def HumanWinStates (userTypeWinStatesGenerator "H"))
-(def MachineWinStates (userTypeWinStatesGenerator "M"))
+(def invalidState ["0" "1" "2" "H" "M" "2" "M" "7" "l"])
+;;(checkCurStateCharValid invalidState) return false
+;;(checkCurStateCharValid onestepWinState) return true
 
-(comment
- HumanWinStates
-[["a1H" "a2H" "a3H"]
- ["b1H" "b2H" "b3H"]
- ["c1H" "c2H" "c3H"]
- ["a1H" "b1H" "c1H"]
- ["a2H" "b2H" "c2H"]
- ["a3H" "b3H" "c3H"]
- ["a1H" "b2H" "c3H"]
- ["a3H" "b2H" "c1H"]]
-;;=> MachineWinStates
-[["a1M" "a2M" "a3M"]
- ["b1M" "b2M" "b3M"]
- ["c1M" "c2M" "c3M"]
- ["a1M" "b1M" "c1M"]
- ["a2M" "b2M" "c2M"]
- ["a3M" "b3M" "c3M"]
- ["a1M" "b2M" "c3M"]
- ["a3M" "b2M" "c1M"]]
-  );; comment over
 
-;;------
+
+           
+                
+  
