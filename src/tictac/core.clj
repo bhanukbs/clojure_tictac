@@ -51,7 +51,7 @@
 )
 ;; check if curstate has only valid characters like "H","M", or "1","2"...
 (defn checkCurStateCharValid 
-  "check if curstate has only valid characters like 'H'or'M', or '1'or'2'..."
+  "check if curstate vector has only valid characters like 'H'or'M', or '1'or'2'..."
   [curstate]
       (not    (some false? 
                 (map-indexed checkSingleSlot curstate)
@@ -63,7 +63,33 @@
 ;;(checkCurStateCharValid invalidState) return false
 ;;(checkCurStateCharValid onestepWinState) return true
 
+(defn userTypeCount
+     "gets the count of given usertype in
+       curState vector"
+      [curState usertype]      
+      (count (filter #(= usertype %) curState))
+)      
+  
 
+(defn checkCurStateValid
+   "check if curstate vector is in valid state
+     count of 'H' should be either 
+       a) equal to count of 'M'
+       b) 1 less than count of 'M'
+       c) 1 greater than count of 'M'"
+   [curState]
+   (let [Hcount (userTypeCount curState "H")
+         Mcount (userTypeCount curState "M")
+         DiffCount (- Hcount Mcount)
+        ]
+     (if (or (= DiffCount 0)
+             (= DiffCount 1)
+             (= DiffCount -1))
+        true ;; valid state
+        false ;; invalid state
+     )
+   )
+)
 
            
                 
